@@ -12,11 +12,15 @@ const petSchema = new Schema({
         required: true
     },
     breed: String,
-    ownerId: { type: Schema.Types.ObjectId, ref: "User" },
+    owner: { 
+        type: Schema.Types.ObjectId,
+        ref: "User",
+        required: true, // Link to the User (Pet Owner) 
+    },
+    age: Number,
     description: String,
     specialCares: String,
     pet_picture: String //URL
-
 })
 
 module.exports = model("Pet", petSchema);
