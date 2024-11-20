@@ -18,20 +18,26 @@ const careRequestSchema = new Schema(
       enum: ["pending", "completed", "accepted"],
     },
     comment: {
-        type: String
+      type: String,
     },
     pet: {
-        type: Schema.Types.ObjectId,
-        ref: "Pet",
-        required: true
+      type: Schema.Types.ObjectId,
+      ref: "Pet",
+      required: true,
     },
-    sitter: {
+    sitter: [
+      {
         type: Schema.Types.ObjectId,
         ref: "User",
-        required: true
-    }
+        required: true,
+      },
+    ],
+    selectedSitter: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
-  
+
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`
     timestamps: true,
