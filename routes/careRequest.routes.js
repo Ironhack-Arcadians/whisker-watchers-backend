@@ -3,21 +3,21 @@ const router = express.Router();
 const CareRequest = require("../models/careRequest.model");
 
 // Post create a new care request
-router.post("/care-requests", (req, res, next) => {
-    const newRequest = req.body;
+router.post("/api/care-requests", (req, res, next) => {
+    const { startDate, endDate, pet, sitter, comment } = req.body;
 
     //validation check for required fields
     if(!startDate || !endDate || !pet || !sitter) {
         return res.status(400).json({ error: "Please fill out all required fields" });
     }
 
-    CareRequest.create({newRequest})
+    CareRequest.create({ startDate, endDate, pet, sitter, comment })
     .then((newCareRequest) => res.status(201).json({ data: newCareRequest }))
     .catch((error) => res.status(500).json({ error: "Failed to create a new care request", details: error }));
 });
 
 // GET read all care requests
-router.get("/care-requests", (req, res, next) => {
+router.get("/api/care-requests", (req, res, next) => {
     CareRequest.find()
     .populate("pet") // Populate pet details
     .populate("sitter") // Populate sitter details
@@ -26,7 +26,7 @@ router.get("/care-requests", (req, res, next) => {
 });
 
 // GET individual care request by id
-router.get("/care-requests/:id", (req, res, next) => {
+router.get("/api/care-requests/:id", (req, res, next) => {
     const { id } = req.params;
 
     CareRequest.findById(id)
@@ -42,7 +42,7 @@ router.get("/care-requests/:id", (req, res, next) => {
 });
 
 // PUT update care request by id
-router.put("/care-requests/:id", (req, res, next) => {
+router.put("/api/care-requests/:id", (req, res, next) => {
     const { id } = req.params;
     const updatedDetails = req.body;
 
@@ -59,7 +59,7 @@ router.put("/care-requests/:id", (req, res, next) => {
 });
 
 // DELETE delete care request by id
-router.delete("/care-requests/:id", (req, res, next) => {
+router.delete("/api/care-requests/:id", (req, res, next) => {
     const { id } = req.params;
 
     CareRequest.findByIdAndDelete(id)

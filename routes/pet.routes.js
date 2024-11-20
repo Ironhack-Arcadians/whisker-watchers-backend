@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const Pet = require("../models/Pet.model");
 
 // POST /pets - Creates a new pet
-router.post("/pets", (req, res, next) => {
+router.post("/api/pets", (req, res, next) => {
   const {
     name,
     typeOfAnimal,
@@ -32,7 +32,7 @@ router.post("/pets", (req, res, next) => {
 });
 
 // GET /pets - Retrieve all of the pets
-router.get("/pets", (req, res, next) => {
+router.get("/api/pets", (req, res, next) => {
   Pet.find()
     // -> Populate User???
     .then((allPets) => res.status(200).json({ data: allPets }))
@@ -42,7 +42,7 @@ router.get("/pets", (req, res, next) => {
 });
 
 // GET /pets/:petId - Retrieve a specific pet by id
-router.get("/pets/:petId", (req, res, next) => {
+router.get("/api/pets/:petId", (req, res, next) => {
   const { petId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(petId)) {
@@ -58,7 +58,7 @@ router.get("/pets/:petId", (req, res, next) => {
       }
       res.status(200).json({ data: pet });
     })
-    .catch((err) => res.json(error));
+    .catch((err) => res.json({error: "Failed to fetch pet by id", err}));
 });
 
 module.exports = router;
