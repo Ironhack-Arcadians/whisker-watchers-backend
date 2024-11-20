@@ -15,7 +15,7 @@ const careRequestSchema = new Schema(
     status: {
       type: String,
       default: "pending",
-      required: true
+      enum: ["pending", "completed", "accepted"],
     },
     comment: {
         type: String
