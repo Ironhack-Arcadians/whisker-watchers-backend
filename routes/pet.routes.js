@@ -31,7 +31,7 @@ router.get("/pets/:petId", (req, res, next) => {
         return;
     }
 
-    Pet.findById(projectId)
+    Pet.findById(petId)
         //  -> Populate User????
         .then((pet) => res.status(200).json(pet))
         .catch((err) => res.json(error));
