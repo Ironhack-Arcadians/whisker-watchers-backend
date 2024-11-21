@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../middleware/jwt.middleware");
+const User = require("../models/User.model")
 
 
 // GET /user/profile//  user by Id
 
-router.get("/profile", User.isAuthenticated, (req, res, next) => {
+router.get("/profile", (req, res, next) => {
     const userId = req.payload._id;
     
     User.findById(userId)
