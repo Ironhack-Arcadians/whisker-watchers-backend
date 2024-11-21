@@ -5,6 +5,8 @@ require("dotenv").config();
 // ℹ️ Connects to the database
 require("./db");
 
+const { isAuthenticated } = require("./middleware/jwt.middleware")
+
 // Handles http requests (express is node js framework)
 // https://www.npmjs.com/package/express
 const express = require("express");
@@ -15,19 +17,20 @@ const app = express();
 require("./config")(app);
 
 // 👇 Start handling routes here
-const indexRoutes = require("./routes/index.routes");
-const authRoutes = require("./routes/auth.routes");
-const userRoutes = require("./routes/user.routes");
-const petRoutes = require("./routes/pet.routes");
-const careRequestRoutes = require("./routes/careRequest.routes");
+const indexRouter = require("./routes/index.routes");
+app.use("/api", indexRouter);
 
+const authRouter = require("./routes/auth.routes");
+app.use("/auth", authRouter);
 
-app.use("/", indexRoutes);
-app.use("/", userRoutes);
-app.use("/", petRoutes);
-app.use("/", careRequestRoutes);
-app.use("/auth", authRoutes);
+const userRouter = require("./routes/user.routes");
+app.use("/api", isAuthenticated, userRouter)
 
+const petRouter = require("./routes/pet.routes");
+app.use("/api", isAuthenticated, petRouter);
+
+const careRequestRouter = require("./routes/careRequest.routes");
+app.use("/api", isAuthenticated, careRequestRouter)
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
