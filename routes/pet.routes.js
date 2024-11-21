@@ -1,35 +1,22 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
-
+const { isAuthenticated } = require("../middleware/jwt.middleware.js");
 const Pet = require("../models/Pet.model");
 
 // POST /pets - Creates a new pet
-router.post("/api/pets", (req, res, next) => {
-  const {
-    name,
-    typeOfAnimal,
-    breed,
-    owner,
-    age,
-    description,
-    specialCares,
-    pet_picture,
-  } = req.body;
-
-  Pet.create({
-    name,
-    typeOfAnimal,
-    breed,
-    owner,
-    age,
-    description,
-    specialCares,
-    pet_picture,
-  })
-    .then((newPet) => res.json(newPet))
-    .catch((err) => res.json(err));
+router.post("/api/pets", isAuthenticated, (req, res, next) => { 
+  const { name, typeOfAnimal, breed, age, description, specialCares, pet_picture } = req.body; 
+  const owner = req.payload._id;
+  
+  Pet.create({ name, typeOfAnimal, breed, owner, age, description, specialCares, pet_picture }) 
+  .then((newPet) => res.json(newPet)) 
+  .catch((err) => {
+    res.json(err);
+    console.log(err)
+  }) 
 });
+  
 
 // GET /pets - Retrieve all of the pets
 router.get("/api/pets", (req, res, next) => {
