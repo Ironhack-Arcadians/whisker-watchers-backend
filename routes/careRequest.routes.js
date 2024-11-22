@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const CareRequest = require("../models/careRequest.model");
 
-// Post create a new care request
-router.post("/api/care-requests", (req, res, next) => {
+// Post /api/care-requests - create a new care request
+router.post("/care-requests", (req, res, next) => {
     const { startDate, endDate, pet, sitter, comment } = req.body;
 
     //validation check for required fields
@@ -16,8 +16,8 @@ router.post("/api/care-requests", (req, res, next) => {
     .catch((error) => res.status(500).json({ error: "Failed to create a new care request", details: error }));
 });
 
-// GET read all care requests
-router.get("/api/care-requests", (req, res, next) => {
+// GET /api/care-requests - read all care requests
+router.get("/care-requests", (req, res, next) => {
     CareRequest.find()
     .populate("pet") // Populate pet details
     .populate("sitter") // Populate sitter details
@@ -25,8 +25,8 @@ router.get("/api/care-requests", (req, res, next) => {
     .catch((error) => res.status(500).json({ error: "Failed to fetch care requests", details: error }));
 });
 
-// GET individual care request by id
-router.get("/api/care-requests/:id", (req, res, next) => {
+// GET /api/care-requests/:requestId - individual care request by id
+router.get("/care-requests/:id", (req, res, next) => {
     const { id } = req.params;
 
     CareRequest.findById(id)
@@ -41,8 +41,8 @@ router.get("/api/care-requests/:id", (req, res, next) => {
     .catch((error) => res.status(500).json({ error: "Failed to fetch care request", details: error }));
 });
 
-// PUT update care request by id
-router.put("/api/care-requests/:id", (req, res, next) => {
+// PUT /api/care-requests/:requestId update care request by id
+router.put("/care-requests/:id", (req, res, next) => {
     const { id } = req.params;
     const updatedDetails = req.body;
 
@@ -58,8 +58,8 @@ router.put("/api/care-requests/:id", (req, res, next) => {
     .catch((error) => res.status(500).json({ error: "Failed to update individual care request" }));
 });
 
-// DELETE delete care request by id
-router.delete("/api/care-requests/:id", (req, res, next) => {
+// DELETE /api/care-requests/:requestId delete care request by id
+router.delete("/care-requests/:id", (req, res, next) => {
     const { id } = req.params;
 
     CareRequest.findByIdAndDelete(id)

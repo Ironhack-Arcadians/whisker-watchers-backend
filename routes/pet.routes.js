@@ -4,8 +4,8 @@ const mongoose = require("mongoose");
 const { isAuthenticated } = require("../middleware/jwt.middleware.js");
 const Pet = require("../models/Pet.model");
 
-// POST /pets - Creates a new pet
-router.post("/api/pets", isAuthenticated, (req, res, next) => { 
+// POST /api/pets - Creates a new pet
+router.post("/pets", isAuthenticated, (req, res, next) => { 
   const { name, typeOfAnimal, breed, age, description, specialCares, pet_picture } = req.body; 
   const owner = req.payload._id;
   
@@ -18,8 +18,8 @@ router.post("/api/pets", isAuthenticated, (req, res, next) => {
 });
   
 
-// GET /pets - Retrieve all of the pets
-router.get("/api/pets", (req, res, next) => {
+// GET /api/pets - Retrieve all of the pets
+router.get("/pets", (req, res, next) => {
   Pet.find()
     // -> Populate User???
     .then((allPets) => res.status(200).json({ data: allPets }))
@@ -28,8 +28,8 @@ router.get("/api/pets", (req, res, next) => {
     );
 });
 
-// GET /pets/:petId - Retrieve a specific pet by id
-router.get("/api/pets/:petId", (req, res, next) => {
+// GET /api/pets/:petId - Retrieve a specific pet by id
+router.get("/pets/:petId", (req, res, next) => {
   const { petId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(petId)) {
