@@ -4,14 +4,14 @@ const CareRequest = require("../models/careRequest.model");
 
 // Post /api/care-requests - create a new care request
 router.post("/care-requests", (req, res, next) => {
-    const { startDate, endDate, pet, sitter, comment } = req.body;
+    const { startDate, endDate, pet, comment } = req.body;
 
     //validation check for required fields
-    if(!startDate || !endDate || !pet || !sitter) {
+    if(!startDate || !endDate || !pet) {
         return res.status(400).json({ error: "Please fill out all required fields" });
     }
 
-    CareRequest.create({ startDate, endDate, pet, sitter, comment })
+    CareRequest.create({ startDate, endDate, pet, comment })
     .then((newCareRequest) => res.status(201).json({ data: newCareRequest }))
     .catch((error) => res.status(500).json({ error: "Failed to create a new care request", details: error }));
 });
@@ -19,8 +19,7 @@ router.post("/care-requests", (req, res, next) => {
 // GET /api/care-requests - read all care requests
 router.get("/care-requests", (req, res, next) => {
     CareRequest.find()
-    .populate("pet") // Populate pet details
-    .populate("sitter") // Populate sitter details
+    .populate("pet", "name typeOfAnimal owner") // Populate pet details
     .then((careRequests) => res.status(200).json({ data: careRequests }))
     .catch((error) => res.status(500).json({ error: "Failed to fetch care requests", details: error }));
 });
@@ -30,8 +29,7 @@ router.get("/care-requests/:id", (req, res, next) => {
     const { id } = req.params;
 
     CareRequest.findById(id)
-    .populate("pet") // Populate pet details
-    .populate("sitter") // Populate sitter details
+    .populate("pet", "name typeOfAnimal owner") // Populate pet details
     .then((careRequest) => {
         if (!careRequest) {
             return res.status(404).json({ error: "Failed to find care request by id" });
@@ -41,6 +39,22 @@ router.get("/care-requests/:id", (req, res, next) => {
     .catch((error) => res.status(500).json({ error: "Failed to fetch care request", details: error }));
 });
 
+
+/*
+// GET /api/care-requests - Retrieve all care requests for sitters (Step for sitters to view all care requests)
+router.get("/care-requests", isAuthenticated, (req, res, next) => {
+    CareRequest.find()
+      .populate("pet") // Populate pet details
+      .populate("owner", "name email") // Optionally include owner details
+      .then((requests) => res.status(200).json({ data: requests }))
+      .catch((err) => {
+        console.error("Error fetching care requests:", err);
+        res.status(500).json({ error: "Failed to fetch care requests", details: err });
+      });
+  });
+*/
+
+
 // PUT /api/care-requests/:requestId update care request by id
 router.put("/care-requests/:id", (req, res, next) => {
     const { id } = req.params;
@@ -48,7 +62,6 @@ router.put("/care-requests/:id", (req, res, next) => {
 
     CareRequest.findByIdAndUpdate(id, updatedDetails, {new: true})
     .populate("pet") // Populate pet details
-    .populate("sitter") // Populate sitter details
     .then((updatedCareRequest) => {
         if (!updatedCareRequest) {
             return res.status(404).json({ error: "Failed to update care request by id" })

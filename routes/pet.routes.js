@@ -19,16 +19,29 @@ router.post("/pets", isAuthenticated, (req, res, next) => {
   
 
 // GET /api/pets - Retrieve all of the pets
-router.get("/pets", (req, res, next) => {
+router.get("/pets/all", (req, res, next) => {
   Pet.find()
-    // -> Populate User???
+    .populate("owner", "name email")
     .then((allPets) => res.status(200).json({ data: allPets }))
     .catch((err) =>
       res.status(500).json({ error: "Failed to fetch pets", err })
     );
-});
-
-// GET /api/pets/:petId - Retrieve a specific pet by id
+  });
+  
+  // GET /api/pets - Retrieve all pets for the logged-in owner
+  router.get("/pets", isAuthenticated, (req, res, next) => {
+    const ownerId = req.payload._id;
+  
+    Pet.find({ owner: ownerId })
+      .then((pets) => res.status(200).json({ data: pets }))
+      .catch((err) => {
+        console.error("Error fetching pets:", err);
+        res.status(500).json({ error: "Failed to fetch pets", details: err });
+      });
+  });
+  
+  
+  // GET /api/pets/:petId - Retrieve a specific pet by id
 router.get("/pets/:petId", (req, res, next) => {
   const { petId } = req.params;
 
@@ -38,7 +51,7 @@ router.get("/pets/:petId", (req, res, next) => {
   }
 
   Pet.findById(petId)
-    //  -> Populate User????
+    ,populate("owner", "name email")
     .then((pet) => {
       if (!pet) {
         return res.status(404).json({ error: "Pet not found" });
@@ -48,4 +61,5 @@ router.get("/pets/:petId", (req, res, next) => {
     .catch((err) => res.json({error: "Failed to fetch pet by id", err}));
 });
 
-module.exports = router;
+
+  module.exports = router;
