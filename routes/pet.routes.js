@@ -61,5 +61,11 @@ router.get("/pets/:petId", (req, res, next) => {
     .catch((err) => res.json({error: "Failed to fetch pet by id", err}));
 });
 
+// GET /api/animal-types Retrieve available animal types
+router.get("/animal-types", (req, res) => {
+  const animalTypes = ['Dog', 'Cat']; // Can be expanded later, must ensure to enter add-ons in pet model as well
+  res.json({ data: animalTypes });
+});
+
 
   module.exports = router;
