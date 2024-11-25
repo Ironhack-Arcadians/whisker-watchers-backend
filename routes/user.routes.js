@@ -20,4 +20,22 @@ router.get("/profile", (req, res, next) => {
     
 });
 
+// GET /api/users/sitters - Retrieve all sitters
+router.get("/sitters", async (req, res) => {
+    try {
+      const sitters = await User.find({ role: "sitter" }).select(
+        "name email location bio profile_pic"
+      );
+  
+      if (!sitters.length) {
+        return res.status(404).json({ message: "No sitters available." });
+      }
+  
+      res.status(200).json({ data: sitters });
+    } catch (error) {
+      console.error("Error fetching sitters:", error);
+      res.status(500).json({ error: "Failed to fetch sitters" });
+    }
+  });
+
 module.exports = router;
