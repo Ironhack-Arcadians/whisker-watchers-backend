@@ -4,14 +4,14 @@ const CareRequest = require("../models/careRequest.model");
 
 // Post /api/care-requests - create a new care request
 router.post("/care-requests", (req, res, next) => {
-    const { startDate, endDate, pet, comment } = req.body;
+    const { startDate, endDate, pet, comment, selectedSitter } = req.body;
 
     //validation check for required fields
-    if(!startDate || !endDate || !pet) {
+    if(!startDate || !endDate || !pet || !selectedSitter) {
         return res.status(400).json({ error: "Please fill out all required fields" });
     }
 
-    CareRequest.create({ startDate, endDate, pet, comment })
+    CareRequest.create({ startDate, endDate, pet, comment, selectedSitter  })
     .then((newCareRequest) => res.status(201).json({ data: newCareRequest }))
     .catch((error) => res.status(500).json({ error: "Failed to create a new care request", details: error }));
 });
@@ -19,7 +19,14 @@ router.post("/care-requests", (req, res, next) => {
 // GET /api/care-requests - read all care requests
 router.get("/care-requests", (req, res, next) => {
     CareRequest.find()
-    .populate("pet", "name typeOfAnimal owner") // Populate pet details
+    .populate({
+        path: 'pet',
+        select: 'name typeOfAnimal pet_picture', // Populate pet details
+        populate: {
+            path: 'owner', // Populate owner field
+            select: 'name location' // Only select name and location of the owner
+        }
+    })
     .then((careRequests) => res.status(200).json({ data: careRequests }))
     .catch((error) => res.status(500).json({ error: "Failed to fetch care requests", details: error }));
 });
@@ -29,7 +36,7 @@ router.get("/care-requests/:id", (req, res, next) => {
     const { id } = req.params;
 
     CareRequest.findById(id)
-    .populate("pet", "name typeOfAnimal owner") // Populate pet details
+    .populate("pet", "name typeOfAnimal owner pet_picture") // Populate pet details
     .then((careRequest) => {
         if (!careRequest) {
             return res.status(404).json({ error: "Failed to find care request by id" });
