@@ -16,20 +16,28 @@ router.post("/care-requests", (req, res, next) => {
     .catch((error) => res.status(500).json({ error: "Failed to create a new care request", details: error }));
 });
 
+
 // GET /api/care-requests - read all care requests
-router.get("/care-requests", (req, res, next) => {
-    CareRequest.find()
-    .populate({
-        path: 'pet',
-        select: 'name typeOfAnimal pet_picture', // Populate pet details
+router.get("/care-requests", (req, res) => {
+    const userId = req.payload._id; // Suponiendo que tienes el usuario autenticado
+  
+    // Filtering by role
+    const filter = req.payload.role === "owner" 
+      ? { "pet.owner": userId }  // Requests created by owner
+      : { selectedSitter: userId }; // Requests asigned to a sitter
+  
+    CareRequest.find(filter)
+      .populate({
+        path: "pet",
+        select: "name typeOfAnimal pet_picture",
         populate: {
-            path: 'owner', // Populate owner field
-            select: 'name location' // Only select name and location of the owner
-        }
-    })
-    .then((careRequests) => res.status(200).json({ data: careRequests }))
-    .catch((error) => res.status(500).json({ error: "Failed to fetch care requests", details: error }));
-});
+          path: "owner",
+          select: "name location",
+        },
+      })
+      .then((careRequests) => res.status(200).json({ data: careRequests }))
+      .catch((error) => res.status(500).json({ error: "Failed to fetch care requests", details: error }));
+  });
 
 // GET /api/care-requests/:requestId - individual care request by id
 router.get("/care-requests/:id", (req, res, next) => {
@@ -46,20 +54,6 @@ router.get("/care-requests/:id", (req, res, next) => {
     .catch((error) => res.status(500).json({ error: "Failed to fetch care request", details: error }));
 });
 
-
-/*
-// GET /api/care-requests - Retrieve all care requests for sitters (Step for sitters to view all care requests)
-router.get("/care-requests", isAuthenticated, (req, res, next) => {
-    CareRequest.find()
-      .populate("pet") // Populate pet details
-      .populate("owner", "name email") // Optionally include owner details
-      .then((requests) => res.status(200).json({ data: requests }))
-      .catch((err) => {
-        console.error("Error fetching care requests:", err);
-        res.status(500).json({ error: "Failed to fetch care requests", details: err });
-      });
-  });
-*/
 
 
 // PUT /api/care-requests/:requestId update care request by id
