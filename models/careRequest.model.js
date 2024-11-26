@@ -25,6 +25,11 @@ const careRequestSchema = new Schema(
       ref: "Pet",
       required: true,
     },
+    creator: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
     sitter: [
       {
         type: Schema.Types.ObjectId,

@@ -1,17 +1,19 @@
 const express = require("express");
 const router = express.Router();
 const CareRequest = require("../models/careRequest.model");
+const { isAuthenticated } = require("../middleware/jwt.middleware");
 
 // Post /api/care-requests - create a new care request
-router.post("/care-requests", (req, res, next) => {
+router.post("/care-requests", isAuthenticated, (req, res, next) => {
     const { startDate, endDate, pet, comment, selectedSitter } = req.body;
+    const creator = req.payload._id;
 
     //validation check for required fields
     if(!startDate || !endDate || !pet || !selectedSitter) {
         return res.status(400).json({ error: "Please fill out all required fields" });
     }
 
-    CareRequest.create({ startDate, endDate, pet, comment, selectedSitter  })
+    CareRequest.create({ startDate, endDate, pet, creator, comment, selectedSitter  })
     .then((newCareRequest) => res.status(201).json({ data: newCareRequest }))
     .catch((error) => res.status(500).json({ error: "Failed to create a new care request", details: error }));
 });
@@ -23,7 +25,7 @@ router.get("/care-requests", (req, res) => {
   
     // Filtering by role
     const filter = req.payload.role === "owner" 
-      ? { "pet.owner": userId }  // Requests created by owner
+      ? { creator: userId }  // Requests created by owner
       : { selectedSitter: userId }; // Requests asigned to a sitter
   
     CareRequest.find(filter)
