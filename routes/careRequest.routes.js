@@ -54,7 +54,7 @@ router.get("/care-requests/:id", isAuthenticated, (req, res, next) => {
       }
 
       // Ensure the current user is the creator of the care request
-      if (careRequest.creator.toString() !== userId) {
+      if (careRequest.creator.toString() !== userId && careRequest.selectedSitter.toString() !==userId) {
         return res.status(403).json({ error: "Unauthorized access to care request" });
       }
 
