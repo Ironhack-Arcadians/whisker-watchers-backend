@@ -42,19 +42,26 @@ router.get("/care-requests", (req, res) => {
   });
 
 // GET /api/care-requests/:requestId - individual care request by id
-router.get("/care-requests/:id", (req, res, next) => {
+router.get("/care-requests/:id", isAuthenticated, (req, res, next) => {
     const { id } = req.params;
-
+    const userId = req.payload._id; // Extract user ID from the authenticated token
+  
     CareRequest.findById(id)
-    .populate("pet", "name typeOfAnimal owner pet_picture") // Populate pet details
-    .then((careRequest) => {
+      .populate("pet", "name typeOfAnimal owner pet_picture")
+      .then((careRequest) => {
         if (!careRequest) {
-            return res.status(404).json({ error: "Failed to find care request by id" });
+          return res.status(404).json({ error: "Care request not found" });
         }
+  
+        // Ensure the current user is the creator of the care request
+        if (careRequest.creator.toString() !== userId) {
+          return res.status(403).json({ error: "Unauthorized access to care request" });
+        }
+  
         res.status(200).json({ data: careRequest });
-    })
-    .catch((error) => res.status(500).json({ error: "Failed to fetch care request", details: error }));
-});
+      })
+      .catch((error) => res.status(500).json({ error: "Failed to fetch care request", details: error }));
+  });
 
 
 
