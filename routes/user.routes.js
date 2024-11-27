@@ -5,10 +5,11 @@ const User = require("../models/User.model")
 
 // GET /user/profile//  user by Id
 
-router.get("/profile", (req, res, next) => {
+router.get("/profile/:id", (req, res, next) => {
     const userId = req.payload._id;
     
     User.findById(userId)
+    .select("-password")
     .then(user => {
         if (!user) {
             return res.status(404).json({message: "User not found"})
