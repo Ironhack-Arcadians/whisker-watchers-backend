@@ -4,6 +4,9 @@ const mongoose = require("mongoose");
 const { isAuthenticated } = require("../middleware/jwt.middleware.js");
 const Pet = require("../models/Pet.model");
 
+
+// Remove/adapt typeOfAnimal field
+
 // POST /api/pets - Creates a new pet
 router.post("/pets", isAuthenticated, (req, res, next) => { 
   const { name, typeOfAnimal, breed, age, description, specialCares, pet_picture } = req.body; 
