@@ -4,6 +4,9 @@ const mongoose = require("mongoose");
 const { isAuthenticated } = require("../middleware/jwt.middleware.js");
 const Pet = require("../models/Pet.model");
 
+
+// Remove/adapt typeOfAnimal field
+
 // POST /api/pets - Creates a new pet
 router.post("/pets", isAuthenticated, (req, res, next) => { 
   const { name, typeOfAnimal, breed, age, description, specialCares, pet_picture } = req.body; 
@@ -16,8 +19,10 @@ router.post("/pets", isAuthenticated, (req, res, next) => {
     console.log(err)
   }) 
 });
-  
 
+
+// Double check this route (Probably redundant)
+/*
 // GET /api/pets - Retrieve all of the pets
 router.get("/pets/all", (req, res, next) => {
   Pet.find()
@@ -27,7 +32,9 @@ router.get("/pets/all", (req, res, next) => {
       res.status(500).json({ error: "Failed to fetch pets", err })
     );
   });
-  
+*/
+
+
   // GET /api/pets - Retrieve all pets for the logged-in owner
   router.get("/pets", isAuthenticated, (req, res, next) => {
     const ownerId = req.payload._id;
