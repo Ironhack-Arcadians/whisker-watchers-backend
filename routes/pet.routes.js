@@ -61,4 +61,20 @@ router.get("/animal-types", (req, res) => {
 });
 
 
+// DELETE /api/care-requests/:requestId delete care request by id
+router.delete("/pets/:id", (req, res, next) => {
+  const { id } = req.params;
+
+  Pet.findByIdAndDelete(id)
+    .then((deletedPet) => {
+      if (!deletedPet) {
+        return res.status(404).json({ error: "Failed to find individual pet" });
+      }
+      res.status(204).send();
+    })
+    .catch((error) => {
+      res.status(500).json({ error: "Failed to delete pet" });
+    });
+});
+
   module.exports = router;
